@@ -1,5 +1,6 @@
 package com.example.library_management.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -43,6 +45,7 @@ public class UsersEntity {
 
     //Add relationship
     @OneToMany (mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<BorrowEntity> borrows;
 
 

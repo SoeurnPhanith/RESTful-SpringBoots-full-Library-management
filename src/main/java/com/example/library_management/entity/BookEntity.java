@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table (name = "tbl_book")
@@ -44,6 +45,9 @@ public class BookEntity {
 
     @Column(name = "publish_datetime")
     private LocalDateTime publishDate;
+
+    @Column(nullable = false)
+    private Boolean available = true;   // true = available, false = borrowed
 
     @CreationTimestamp
     @Column(name = "create_at")
