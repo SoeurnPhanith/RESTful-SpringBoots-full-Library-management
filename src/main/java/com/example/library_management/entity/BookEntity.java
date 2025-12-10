@@ -39,6 +39,9 @@ public class BookEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
 
+    private String imagePath; // store image path
+    private String imageType;
+
     @Column(name = "publish_datetime")
     private LocalDateTime publishDate;
 

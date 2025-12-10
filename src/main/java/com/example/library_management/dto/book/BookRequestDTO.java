@@ -38,4 +38,6 @@ public class BookRequestDTO {
 
     @NotNull(message = "publish date can't not null")
     private LocalDateTime publishDate;
+
+    //no need image here need to upload by admin
 }

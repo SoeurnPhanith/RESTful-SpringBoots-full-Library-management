@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,9 +23,12 @@ public class BookController {
 
     @PostMapping
     public ResponseEntity<APIRespone<BookResponseDTO>> addBook(
-            @RequestBody @Valid BookRequestDTO book
-    ){
-        return bookService.addBook(book);
+            @ModelAttribute BookRequestDTO bookDTO,
+            //use model attribute dermby aj upload image ban ber use @RequestBody ban tea Json format only
+            //muy tt vea accept oy yg bos data tv pii form data ban
+            @RequestParam("image") MultipartFile imageFile
+    ) throws IOException {
+        return bookService.addBook(bookDTO, imageFile);
     }
 
     @GetMapping
@@ -37,4 +42,23 @@ public class BookController {
     ){
         return bookService.showBookInLibraryById(bookId);
     }
+
+    @PutMapping ("/{bookId}")
+    public ResponseEntity<APIRespone<BookResponseDTO>> updateBook(
+            @PathVariable @Valid Integer bookId,
+            @ModelAttribute @Valid BookRequestDTO book,
+            @RequestParam (value = "image", required = false) MultipartFile image
+    )throws IOException{
+        return bookService.updateBookInLibrary(bookId, book, image);
+    }
+    /*nakប្រើ throws IOException → ប្រាប់ Spring Boot:
+    ប្រសិនបើមាន error during file upload → Spring Boot handle error automatically (500 Internal Server Error)*/
+
+    @DeleteMapping ("/{bookId}")
+    public ResponseEntity<APIRespone<String>> removeBookFromLibrary(
+            @PathVariable @Valid Integer bookId
+    ){
+        return bookService.removeBookInLibrary(bookId);
+    }
+
 }

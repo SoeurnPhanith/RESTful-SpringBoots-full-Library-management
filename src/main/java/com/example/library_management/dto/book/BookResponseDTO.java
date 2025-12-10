@@ -23,6 +23,9 @@ public class BookResponseDTO {
     private Integer categoryId;
     private String categoryName;
 
+    private String imagePath;
+    private String imageType;
+
     private LocalDateTime publishDate;
 
     private LocalDateTime createAt;
