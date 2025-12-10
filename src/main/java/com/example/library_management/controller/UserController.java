@@ -1,7 +1,7 @@
 package com.example.library_management.controller;
 
 import com.example.library_management.dto.users.UserRequestDTO;
-import com.example.library_management.dto.users.UserResponeDTO;
+import com.example.library_management.dto.users.UserResponseDTO;
 import com.example.library_management.service.service_implementation.UserServiceImpl;
 import com.example.library_management.utils.APIRespone;
 import com.example.library_management.utils.UtilEndPoint;
@@ -21,26 +21,26 @@ public class UserController {
     private UserServiceImpl userService;
 
     @PostMapping
-    public ResponseEntity<APIRespone<UserResponeDTO>> createUser(
+    public ResponseEntity<APIRespone<UserResponseDTO>> createUser(
             @Valid @RequestBody UserRequestDTO users
     ){
         return userService.createUser(users);
     }
 
     @GetMapping
-    public ResponseEntity<APIRespone<List<UserResponeDTO>>> getAllUser(){
+    public ResponseEntity<APIRespone<List<UserResponseDTO>>> getAllUser(){
         return userService.getAllUser();
     }
 
     @GetMapping ("/{userId}")
-    public ResponseEntity<APIRespone<UserResponeDTO>> getUserById(
+    public ResponseEntity<APIRespone<UserResponseDTO>> getUserById(
             @PathVariable @Valid Integer userId
     ){
         return userService.getUserById(userId);
     }
 
     @PutMapping ("/{userId}")
-    public ResponseEntity<APIRespone<UserResponeDTO>> updateUser(
+    public ResponseEntity<APIRespone<UserResponseDTO>> updateUser(
             @PathVariable @Valid Integer userId,
             @RequestBody @Valid UserRequestDTO userRequestDTO
     ){

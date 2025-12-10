@@ -24,6 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    //inject from ResponseDTO
     @Override
     public @NonNull ResponseEntity<APIRespone<CategoryResponseDTO>> addCategory(CategoryRequestDTO category) {
         try{

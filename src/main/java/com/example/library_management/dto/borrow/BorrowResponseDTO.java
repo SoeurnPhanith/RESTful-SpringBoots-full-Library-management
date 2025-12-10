@@ -1,9 +1,13 @@
 package com.example.library_management.dto.borrow;
 
+import com.example.library_management.dto.book.BookResponseDTO;
+import com.example.library_management.dto.users.UserResponseDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
@@ -11,16 +15,18 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BorrowResponseDTO {
 
-    private Integer userId;
-    private String userName;
+    private int borrowId;
 
-    private Integer bookId;
-    private String bookTitle;
-    private String bookImage;
+    private UserResponseDTO user;    // ✅ must be DTO
+    private BookResponseDTO book;    // ✅ must be DTO
 
     private LocalDateTime borrowDate;
-    private LocalDateTime returnDate;
+    private LocalDateTime dueTime;
 
+    private Double fineAmount;
+    private LocalDateTime returnDate;
 }

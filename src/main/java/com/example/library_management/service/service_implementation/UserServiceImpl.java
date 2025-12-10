@@ -1,7 +1,7 @@
 package com.example.library_management.service.service_implementation;
 
 import com.example.library_management.dto.users.UserRequestDTO;
-import com.example.library_management.dto.users.UserResponeDTO;
+import com.example.library_management.dto.users.UserResponseDTO;
 import com.example.library_management.entity.UsersEntity;
 import com.example.library_management.exception.DuplicateDataException;
 import com.example.library_management.exception.GenericException;
@@ -26,9 +26,10 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    //inject data from UserResponseDTO
     @Nonnull
     @Override
-    public ResponseEntity<APIRespone<UserResponeDTO>> createUser(UserRequestDTO userRequestDTO) {
+    public ResponseEntity<APIRespone<UserResponseDTO>> createUser(UserRequestDTO userRequestDTO) {
         try{
             //check exist user
             boolean exitsUser = userRepository.existsByEmail(userRequestDTO.getEmail());
@@ -57,15 +58,15 @@ public class UserServiceImpl implements UserService {
             UsersEntity savedEntity = userRepository.save(entity);
 
             //map from entity -->> dto
-            UserResponeDTO userResponeDTO = new UserResponeDTO();
-            userResponeDTO.setId(savedEntity.getId());
-            userResponeDTO.setName(savedEntity.getName());
-            userResponeDTO.setEmail(savedEntity.getEmail());
+            UserResponseDTO userResponseDTO = new UserResponseDTO();
+            userResponseDTO.setId(savedEntity.getId());
+            userResponseDTO.setName(savedEntity.getName());
+            userResponseDTO.setEmail(savedEntity.getEmail());
 
             return ResponseEntity.ok(new APIRespone<>(
                     true,
                     "add student success",
-                    userResponeDTO
+                    userResponseDTO
             ));
         }catch (Exception exception){
             throw new ResourceNotFoundException(exception.getMessage());
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
     @Nonnull
     @Override
-    public ResponseEntity<APIRespone<List<UserResponeDTO>>> getAllUser() {
+    public ResponseEntity<APIRespone<List<UserResponseDTO>>> getAllUser() {
         try{
             //get all data from entity
             List<UsersEntity> usersEntity = userRepository.findAll();
@@ -85,16 +86,16 @@ public class UserServiceImpl implements UserService {
             }
 
             //get all data from userEntity --> userResponseDTO
-            List<UserResponeDTO> dtoList = new ArrayList<>();
+            List<UserResponseDTO> dtoList = new ArrayList<>();
             for(UsersEntity users : usersEntity){
-                UserResponeDTO userResponeDTO = new UserResponeDTO();
+                UserResponseDTO userResponseDTO = new UserResponseDTO();
 
-                userResponeDTO.setId(users.getId());
-                userResponeDTO.setName(users.getName());
-                userResponeDTO.setEmail(users.getEmail());
+                userResponseDTO.setId(users.getId());
+                userResponseDTO.setName(users.getName());
+                userResponseDTO.setEmail(users.getEmail());
 
                 //add to dtoList
-                dtoList.add(userResponeDTO);
+                dtoList.add(userResponseDTO);
             }
             return ResponseEntity.ok(
                     new APIRespone<>(
@@ -110,7 +111,7 @@ public class UserServiceImpl implements UserService {
 
     @Nonnull
     @Override
-    public ResponseEntity<APIRespone<UserResponeDTO>> getUserById(Integer id) {
+    public ResponseEntity<APIRespone<UserResponseDTO>> getUserById(Integer id) {
        try{
            //get data from userResponseDTO with id
            Optional<UsersEntity> users = userRepository.findById(id);
@@ -123,15 +124,15 @@ public class UserServiceImpl implements UserService {
            //get data from entity --> userResponseDTO
            UsersEntity entity = users.get();
 
-           UserResponeDTO userResponeDTO = new UserResponeDTO();
-           userResponeDTO.setId(entity.getId());
-           userResponeDTO.setName(entity.getName());
-           userResponeDTO.setEmail(entity.getEmail());
+           UserResponseDTO userResponseDTO = new UserResponseDTO();
+           userResponseDTO.setId(entity.getId());
+           userResponseDTO.setName(entity.getName());
+           userResponseDTO.setEmail(entity.getEmail());
            return ResponseEntity.ok(
                    new APIRespone<>(
                            true,
                            "get student id " + id + " success",
-                           userResponeDTO
+                           userResponseDTO
                    )
            );
        }catch (Exception exception){
@@ -141,7 +142,7 @@ public class UserServiceImpl implements UserService {
 
     @Nonnull
     @Override
-    public ResponseEntity<APIRespone<UserResponeDTO>> updateUser(Integer id, UserRequestDTO userDTO) {
+    public ResponseEntity<APIRespone<UserResponseDTO>> updateUser(Integer id, UserRequestDTO userDTO) {
         try{
             //get data from database with id
             Optional<UsersEntity> usersEntity = userRepository.findById(id);
@@ -162,16 +163,16 @@ public class UserServiceImpl implements UserService {
             UsersEntity savedUpdate = userRepository.save(updateEntity);
 
             //sent data from entity --> userResponseDTO
-            UserResponeDTO userResponeDTO = new UserResponeDTO();
-            userResponeDTO.setId(savedUpdate.getId());
-            userResponeDTO.setName(savedUpdate.getName());
-            userResponeDTO.setEmail(savedUpdate.getEmail());
+            UserResponseDTO userResponseDTO = new UserResponseDTO();
+            userResponseDTO.setId(savedUpdate.getId());
+            userResponseDTO.setName(savedUpdate.getName());
+            userResponseDTO.setEmail(savedUpdate.getEmail());
 
             return ResponseEntity.ok(
                     new APIRespone<>(
                             true,
                             "update user success!",
-                            userResponeDTO
+                            userResponseDTO
                     )
             );
         }catch (Exception exception){

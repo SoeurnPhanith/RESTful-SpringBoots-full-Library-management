@@ -43,6 +43,9 @@ public class BookServiceImpl implements BookService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    //inject BookResponseDTO
+    @Autowired
+    private BookResponseDTO responseDTO;
     @Override
     public @NonNull ResponseEntity<APIRespone<BookResponseDTO>> addBook(BookRequestDTO book, MultipartFile imageFile) {
         try {
@@ -88,7 +91,6 @@ public class BookServiceImpl implements BookService {
             BookEntity saved = bookRepository.save(entity);
 
             // Map Entity to ResponseDTO
-            BookResponseDTO responseDTO = new BookResponseDTO();
             responseDTO.setId(saved.getId());
             responseDTO.setTitle(saved.getTitle());
             responseDTO.setAuthorId(saved.getAuthor().getId());

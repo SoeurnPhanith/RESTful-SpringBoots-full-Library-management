@@ -1,5 +1,7 @@
 package com.example.library_management.service.service_implementation;
 
+import com.example.library_management.dto.users.UserResponseDTO;
+import com.example.library_management.dto.book.BookResponseDTO;
 import com.example.library_management.dto.borrow.BorrowRequestDTO;
 import com.example.library_management.dto.borrow.BorrowResponseDTO;
 import com.example.library_management.dto.borrow.ReturnBookDTO;
@@ -18,8 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,11 +71,15 @@ public class BorrowServiceImpl implements BorrowService {
 
            //map data from Entity to ResponseDTO
            BorrowResponseDTO responseDTO = new BorrowResponseDTO();
-           responseDTO.setUserId(savedBorrow.getUser().getId());
-           responseDTO.setUserName(savedBorrow.getUser().getName());
-           responseDTO.setBookId(savedBorrow.getBook().getId());
-           responseDTO.setBookTitle(savedBorrow.getBook().getTitle());
-           responseDTO.setBookImage(savedBorrow.getBook().getImagePath());
+           responseDTO.setUser(new UserResponseDTO(
+                   savedBorrow.getUser().getName(),
+                   savedBorrow.getUser().getEmail()
+           ));
+           responseDTO.setBook(new BookResponseDTO(
+                  savedBorrow.getBook().getTitle(),
+                  savedBorrow.getBook().getImagePath(),
+                  savedBorrow.getBook().getAvailable()
+           ));
            responseDTO.setBorrowDate(savedBorrow.getBorrowDate());
            responseDTO.setReturnDate(savedBorrow.getDueDate());
            return ResponseEntity.ok(new APIRespone<>(
@@ -134,34 +138,36 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Override
     public ResponseEntity<APIRespone<List<BorrowResponseDTO>>> checkAllHistoryOfBorrowed() {
-        try{
-            //get all data from database and check empty or not
+        try {
             List<BorrowEntity> borrowData = borrowRepository.findAll();
-            if(borrowData.isEmpty()){
+            if (borrowData.isEmpty()) {
                 throw new ResourceNotFoundException("No data record!");
             }
 
-            //get data you got and map it to ResponseDTO
             List<BorrowResponseDTO> dtoList = new ArrayList<>();
-            for(BorrowEntity data : borrowData){
-                BorrowResponseDTO responseDTO = new BorrowResponseDTO();
-                responseDTO.setUserId(data.getUser().getId());
-                responseDTO.setUserName(data.getUser().getName());
-                responseDTO.setBookId(data.getBook().getId());
-                responseDTO.setBookTitle(data.getBook().getTitle());
-                responseDTO.setBookImage(data.getBook().getImagePath());
+            for (BorrowEntity data : borrowData) {
+                BorrowResponseDTO responseDTO  = new BorrowResponseDTO();
+                responseDTO.setBorrowId(data.getId());
+                responseDTO.setUser(new UserResponseDTO(data.getUser().getName(), data.getUser().getEmail()));
+                responseDTO.setBook(new BookResponseDTO(
+                        data.getBook().getTitle(),
+                        data.getBook().getImagePath(),
+                        data.getBook().getAvailable()
+                ));
                 responseDTO.setBorrowDate(data.getBorrowDate());
+                responseDTO.setDueTime(data.getDueDate());
                 responseDTO.setReturnDate(data.getReturnDate());
+                responseDTO.setFineAmount(data.getFine_amount());
 
-                //add to dtoList
                 dtoList.add(responseDTO);
+
             }
             return ResponseEntity.ok(new APIRespone<>(
                     true,
                     "check borrow book success",
-                    dtoList
+                     dtoList
             ));
-        }catch (Exception exception){
+        }catch (Exception exception) {
             throw new GenericException(exception.getMessage());
         }
     }
@@ -181,3 +187,6 @@ public class BorrowServiceImpl implements BorrowService {
         return null;
     }
 }
+
+
+
