@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BorrowServiceImpl implements BorrowService {
@@ -66,7 +67,7 @@ public class BorrowServiceImpl implements BorrowService {
            BorrowEntity entity = new BorrowEntity();
            entity.setUser(user);
            entity.setBook(book);
-           entity.setReturnDate(borrow.getDueDate());
+           entity.setDueDate(borrow.getDueDate());
            BorrowEntity savedBorrow = borrowRepository.save(entity);
 
            //map data from Entity to ResponseDTO
@@ -174,18 +175,109 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Override
     public @NonNull ResponseEntity<APIRespone<BorrowResponseDTO>> checkHistoryOfBorrowedById(Integer id) {
-        return null;
+        try{
+            //find history off borrow book ById
+            Optional<BorrowEntity> borrowed = borrowRepository.findById(id);
+
+            //get book borrowed record
+            BorrowEntity getBorrowed = borrowed.get();
+
+            //map data from Entity ->> BorrowResponseDTO
+            BorrowResponseDTO responseDTO = new BorrowResponseDTO();
+            responseDTO.setBorrowId(getBorrowed.getId());
+            responseDTO.setUser(new UserResponseDTO(
+                    getBorrowed.getUser().getName(),
+                    getBorrowed.getUser().getEmail()));
+            responseDTO.setBook(new BookResponseDTO(
+                    getBorrowed.getBook().getTitle(),
+                    getBorrowed.getBook().getImagePath(),
+                    getBorrowed.getBook().getAvailable()
+            ));
+            responseDTO.setBorrowDate(getBorrowed.getBorrowDate());
+            responseDTO.setDueTime(getBorrowed.getDueDate());
+            responseDTO.setReturnDate(getBorrowed.getReturnDate());
+            responseDTO.setFineAmount(getBorrowed.getFine_amount());
+            return ResponseEntity.ok(new APIRespone<>(
+                    true,
+                    "History this borrowed",
+                    responseDTO
+            ));
+        }catch (Exception exception){
+            throw new GenericException(exception.getMessage());
+        }
     }
 
     @Override
     public @NonNull ResponseEntity<APIRespone<BorrowResponseDTO>> updateHistory(Integer id, BorrowRequestDTO borrow) {
-        return null;
+        try{
+            //find history of borrowed Book by id
+            Optional<BorrowEntity> borrowed = borrowRepository.findById(id);
+            if(!borrowed.isPresent()){
+                throw new ResourceNotFoundException("This history of borrowed no record found");
+            }
+
+            // 1. get user and book
+            BookEntity book = bookRepository.findById(borrow.getBook())
+                    .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+
+            UsersEntity user = userRepository.findById(borrow.getUser())
+                    .orElseThrow(() -> new ResourceNotFoundException("user not found"));
+
+            //get data found to update
+            BorrowEntity getBorrowed = borrowed.get();
+            getBorrowed.setUser(user);
+            getBorrowed.setBook(book);
+            getBorrowed.setDueDate(borrow.getDueDate());
+
+            //save & update it in database
+            BorrowEntity saved = borrowRepository.save(getBorrowed);
+
+            //Map data from entity -->> BorrowResponseDTO
+            BorrowResponseDTO responseDTO = new BorrowResponseDTO();
+            responseDTO.setBorrowId(getBorrowed.getId());
+            responseDTO.setUser(new UserResponseDTO(
+                    getBorrowed.getUser().getName(),
+                    getBorrowed.getUser().getEmail()));
+            responseDTO.setBook(new BookResponseDTO(
+                    getBorrowed.getBook().getTitle(),
+                    getBorrowed.getBook().getImagePath(),
+                    getBorrowed.getBook().getAvailable()
+            ));
+            responseDTO.setBorrowDate(getBorrowed.getBorrowDate());
+            responseDTO.setDueTime(getBorrowed.getDueDate());
+            responseDTO.setReturnDate(getBorrowed.getReturnDate());
+            responseDTO.setFineAmount(getBorrowed.getFine_amount());
+            return ResponseEntity.ok(new APIRespone<>(
+                    true,
+                    "update history success",
+                    responseDTO
+            ));
+        }catch (Exception exception){
+            throw new GenericException(exception.getMessage());
+        }
     }
 
     @Override
     public @NonNull ResponseEntity<APIRespone<String>> clearHistory(Integer id) {
-        return null;
+        try{
+            //findHistory by id to remove
+            Optional<BorrowEntity> borrowed = borrowRepository.findById(id);
+            if(!borrowed.isPresent()){
+                throw new ResourceNotFoundException("history recorded not found");
+            }
+
+            //remove history found
+            borrowRepository.deleteById(id);
+            return ResponseEntity.ok(new APIRespone<>(
+                    true,
+                    "remove history success",
+                    " Done "
+            ));
+        }catch (Exception exception){
+            throw new GenericException(exception.getMessage());
+        }
     }
+
 }
 
 

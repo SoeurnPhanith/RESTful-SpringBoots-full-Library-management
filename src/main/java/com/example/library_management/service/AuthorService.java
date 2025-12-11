@@ -2,7 +2,6 @@ package com.example.library_management.service;
 
 import com.example.library_management.dto.author.AuthorRequestDTO;
 import com.example.library_management.dto.author.AuthorResponeDTO;
-import com.example.library_management.entity.AuthorEntity;
 import com.example.library_management.utils.APIRespone;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;

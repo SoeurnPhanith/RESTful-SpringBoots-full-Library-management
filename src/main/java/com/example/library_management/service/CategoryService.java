@@ -2,7 +2,6 @@ package com.example.library_management.service;
 
 import com.example.library_management.dto.category.CategoryRequestDTO;
 import com.example.library_management.dto.category.CategoryResponseDTO;
-import com.example.library_management.entity.CategoryEntity;
 import com.example.library_management.utils.APIRespone;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;

@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -41,4 +40,25 @@ public class BorrowController {
         return borrowService.checkAllHistoryOfBorrowed();
     }
 
+    @GetMapping ("/{id}")
+    public ResponseEntity<APIRespone<BorrowResponseDTO>> checkHistoryBookInLibraryById(
+            @Valid @PathVariable Integer id
+    ){
+        return borrowService.checkHistoryOfBorrowedById(id);
+    }
+
+    @PutMapping ("/{id}")
+    public ResponseEntity<APIRespone<BorrowResponseDTO>> updateHistory(
+            @Valid @PathVariable Integer id,
+            @Valid @RequestBody BorrowRequestDTO dto
+    ){
+        return borrowService.updateHistory(id,dto);
+    }
+
+    @DeleteMapping ("/id")
+    public ResponseEntity<APIRespone<String>> removeHistoryBorrowed(
+            @Valid @PathVariable Integer id
+    ) {
+        return borrowService.clearHistory(id);
+    }
 }
