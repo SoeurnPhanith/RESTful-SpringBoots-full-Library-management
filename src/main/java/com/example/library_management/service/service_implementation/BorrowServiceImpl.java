@@ -1,7 +1,5 @@
 package com.example.library_management.service.service_implementation;
 
-import com.example.library_management.dto.users.UserResponseDTO;
-import com.example.library_management.dto.book.BookResponseDTO;
 import com.example.library_management.dto.borrow.BorrowRequestDTO;
 import com.example.library_management.dto.borrow.BorrowResponseDTO;
 import com.example.library_management.dto.borrow.ReturnBookDTO;
@@ -10,6 +8,7 @@ import com.example.library_management.entity.BorrowEntity;
 import com.example.library_management.entity.UsersEntity;
 import com.example.library_management.exception.GenericException;
 import com.example.library_management.exception.ResourceNotFoundException;
+import com.example.library_management.mapper.mapper_impl.BorrowMapperImp;
 import com.example.library_management.repository.BookRepository;
 import com.example.library_management.repository.BorrowRepository;
 import com.example.library_management.repository.UserRepository;
@@ -37,6 +36,10 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Autowired
     private BookRepository bookRepository;
+
+    //inject data from BorrowMapperImpl
+    @Autowired
+    private BorrowMapperImp borrowMapper;
 
     @Override
     public @NonNull ResponseEntity<APIRespone<BorrowResponseDTO>> borrow(BorrowRequestDTO borrow) {
@@ -71,18 +74,7 @@ public class BorrowServiceImpl implements BorrowService {
            BorrowEntity savedBorrow = borrowRepository.save(entity);
 
            //map data from Entity to ResponseDTO
-           BorrowResponseDTO responseDTO = new BorrowResponseDTO();
-           responseDTO.setUser(new UserResponseDTO(
-                   savedBorrow.getUser().getName(),
-                   savedBorrow.getUser().getEmail()
-           ));
-           responseDTO.setBook(new BookResponseDTO(
-                  savedBorrow.getBook().getTitle(),
-                  savedBorrow.getBook().getImagePath(),
-                  savedBorrow.getBook().getAvailable()
-           ));
-           responseDTO.setBorrowDate(savedBorrow.getBorrowDate());
-           responseDTO.setReturnDate(savedBorrow.getDueDate());
+           BorrowResponseDTO responseDTO = borrowMapper.entityToDto(savedBorrow);
            return ResponseEntity.ok(new APIRespone<>(
                    true,
                    "Book borrow success",
@@ -147,21 +139,8 @@ public class BorrowServiceImpl implements BorrowService {
 
             List<BorrowResponseDTO> dtoList = new ArrayList<>();
             for (BorrowEntity data : borrowData) {
-                BorrowResponseDTO responseDTO  = new BorrowResponseDTO();
-                responseDTO.setBorrowId(data.getId());
-                responseDTO.setUser(new UserResponseDTO(data.getUser().getName(), data.getUser().getEmail()));
-                responseDTO.setBook(new BookResponseDTO(
-                        data.getBook().getTitle(),
-                        data.getBook().getImagePath(),
-                        data.getBook().getAvailable()
-                ));
-                responseDTO.setBorrowDate(data.getBorrowDate());
-                responseDTO.setDueTime(data.getDueDate());
-                responseDTO.setReturnDate(data.getReturnDate());
-                responseDTO.setFineAmount(data.getFine_amount());
-
+                BorrowResponseDTO responseDTO  = borrowMapper.entityToDto(data);
                 dtoList.add(responseDTO);
-
             }
             return ResponseEntity.ok(new APIRespone<>(
                     true,
@@ -183,20 +162,7 @@ public class BorrowServiceImpl implements BorrowService {
             BorrowEntity getBorrowed = borrowed.get();
 
             //map data from Entity ->> BorrowResponseDTO
-            BorrowResponseDTO responseDTO = new BorrowResponseDTO();
-            responseDTO.setBorrowId(getBorrowed.getId());
-            responseDTO.setUser(new UserResponseDTO(
-                    getBorrowed.getUser().getName(),
-                    getBorrowed.getUser().getEmail()));
-            responseDTO.setBook(new BookResponseDTO(
-                    getBorrowed.getBook().getTitle(),
-                    getBorrowed.getBook().getImagePath(),
-                    getBorrowed.getBook().getAvailable()
-            ));
-            responseDTO.setBorrowDate(getBorrowed.getBorrowDate());
-            responseDTO.setDueTime(getBorrowed.getDueDate());
-            responseDTO.setReturnDate(getBorrowed.getReturnDate());
-            responseDTO.setFineAmount(getBorrowed.getFine_amount());
+            BorrowResponseDTO responseDTO = borrowMapper.entityToDto(getBorrowed);
             return ResponseEntity.ok(new APIRespone<>(
                     true,
                     "History this borrowed",
@@ -233,20 +199,7 @@ public class BorrowServiceImpl implements BorrowService {
             BorrowEntity saved = borrowRepository.save(getBorrowed);
 
             //Map data from entity -->> BorrowResponseDTO
-            BorrowResponseDTO responseDTO = new BorrowResponseDTO();
-            responseDTO.setBorrowId(getBorrowed.getId());
-            responseDTO.setUser(new UserResponseDTO(
-                    getBorrowed.getUser().getName(),
-                    getBorrowed.getUser().getEmail()));
-            responseDTO.setBook(new BookResponseDTO(
-                    getBorrowed.getBook().getTitle(),
-                    getBorrowed.getBook().getImagePath(),
-                    getBorrowed.getBook().getAvailable()
-            ));
-            responseDTO.setBorrowDate(getBorrowed.getBorrowDate());
-            responseDTO.setDueTime(getBorrowed.getDueDate());
-            responseDTO.setReturnDate(getBorrowed.getReturnDate());
-            responseDTO.setFineAmount(getBorrowed.getFine_amount());
+            BorrowResponseDTO responseDTO = borrowMapper.entityToDto(saved);
             return ResponseEntity.ok(new APIRespone<>(
                     true,
                     "update history success",

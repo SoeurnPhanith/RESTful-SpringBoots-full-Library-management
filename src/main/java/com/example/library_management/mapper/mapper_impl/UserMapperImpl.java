@@ -7,6 +7,8 @@ import com.example.library_management.entity.UsersEntity;
 import com.example.library_management.mapper.UserMapper;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class UserMapperImpl implements UserMapper {
     @Override
@@ -28,5 +30,16 @@ public class UserMapperImpl implements UserMapper {
         dto.setName(entity.getName());
         dto.setEmail(entity.getEmail());
         return dto;
+    }
+
+    //update requestDTO to entity
+    public UsersEntity updateDtoToEntity(UserRequestDTO dto){
+        UsersEntity entity = new UsersEntity();
+
+        entity.setName(dto.getName());
+        entity.setEmail(dto.getEmail());
+        entity.setPassword(dto.getPassword());
+        entity.setUpdate(LocalDateTime.now());
+        return entity;
     }
 }

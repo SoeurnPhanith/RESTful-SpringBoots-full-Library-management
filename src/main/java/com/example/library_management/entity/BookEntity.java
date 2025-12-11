@@ -57,5 +57,9 @@ public class BookEntity {
     @Column(name = "update_at")
     private LocalDateTime update;
 
+    public BookEntity(Integer id){
+        this.id = id;
+    }
+
 }
 

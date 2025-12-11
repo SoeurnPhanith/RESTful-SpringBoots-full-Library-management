@@ -8,6 +8,7 @@ import com.example.library_management.entity.CategoryEntity;
 import com.example.library_management.exception.DuplicateDataException;
 import com.example.library_management.exception.GenericException;
 import com.example.library_management.exception.ResourceNotFoundException;
+import com.example.library_management.mapper.mapper_impl.BookMapperImpl;
 import com.example.library_management.repository.AuthorRepository;
 import com.example.library_management.repository.BookRepository;
 import com.example.library_management.repository.CategoryRepository;
@@ -43,9 +44,9 @@ public class BookServiceImpl implements BookService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    //inject BookResponseDTO
+    //inject BookMapperImpl
     @Autowired
-    private BookResponseDTO responseDTO;
+    private BookMapperImpl bookMapper;
     @Override
     public @NonNull ResponseEntity<APIRespone<BookResponseDTO>> addBook(BookRequestDTO book, MultipartFile imageFile) {
         try {
@@ -91,17 +92,7 @@ public class BookServiceImpl implements BookService {
             BookEntity saved = bookRepository.save(entity);
 
             // Map Entity to ResponseDTO
-            responseDTO.setId(saved.getId());
-            responseDTO.setTitle(saved.getTitle());
-            responseDTO.setAuthorId(saved.getAuthor().getId());
-            responseDTO.setAuthorName(saved.getAuthor().getName());
-            responseDTO.setCategoryId(saved.getCategory().getId());
-            responseDTO.setCategoryName(saved.getCategory().getName());
-            responseDTO.setImagePath(saved.getImagePath()); // short URL string
-            responseDTO.setImageType(saved.getImageType());
-            responseDTO.setPublishDate(saved.getPublishDate());
-            responseDTO.setCreateAt(saved.getCreate());
-            responseDTO.setUpdateAt(saved.getUpdate());
+            BookResponseDTO responseDTO = bookMapper.entityToDto(saved);
 
             return ResponseEntity.ok(new APIRespone<>(
                     true,
@@ -129,20 +120,7 @@ public class BookServiceImpl implements BookService {
             //get all data from entity to ResponseDTO
             List<BookResponseDTO> dtoList = new ArrayList<>();
             for(BookEntity book : allDataFromEntity){
-                BookResponseDTO responseDTO = new BookResponseDTO();
-
-                responseDTO.setId(book.getId());
-                responseDTO.setTitle(book.getTitle());
-                responseDTO.setAuthorId(book.getAuthor().getId());
-                responseDTO.setAuthorName(book.getAuthor().getName());
-                responseDTO.setCategoryId(book.getCategory().getId());
-                responseDTO.setCategoryName(book.getCategory().getName());
-                responseDTO.setImagePath(book.getImagePath()); // short URL string
-                responseDTO.setImageType(book.getImageType());
-                responseDTO.setPublishDate(book.getPublishDate());
-                responseDTO.setCreateAt(book.getCreate());
-                responseDTO.setUpdateAt(book.getUpdate());
-
+                BookResponseDTO responseDTO = bookMapper.entityToDto(book);
                 //save to dtoList
                 dtoList.add(responseDTO);
             }
@@ -169,18 +147,7 @@ public class BookServiceImpl implements BookService {
             BookEntity entity = getDataById.get();
 
             //map data from Entity to ResponseDTO
-            BookResponseDTO responseDTO = new BookResponseDTO();
-            responseDTO.setId(entity.getId());
-            responseDTO.setTitle(entity.getTitle());
-            responseDTO.setAuthorId(entity.getAuthor().getId());
-            responseDTO.setAuthorName(entity.getAuthor().getName());
-            responseDTO.setCategoryId(entity.getCategory().getId());
-            responseDTO.setCategoryName(entity.getCategory().getName());
-            responseDTO.setImagePath(entity.getImagePath()); // short URL string
-            responseDTO.setImageType(entity.getImageType());
-            responseDTO.setPublishDate(entity.getPublishDate());
-            responseDTO.setCreateAt(entity.getCreate());
-            responseDTO.setUpdateAt(entity.getUpdate());
+            BookResponseDTO responseDTO = bookMapper.entityToDto(entity);
             return ResponseEntity.ok(new APIRespone<>(
                     true,
                     "Get book by id " + id + " success",
@@ -240,18 +207,7 @@ public class BookServiceImpl implements BookService {
            //save entity who we updated
            BookEntity saved = bookRepository.save(update);
            //map data from Entity to ResponseDTO
-           BookResponseDTO responseDTO = new BookResponseDTO();
-           responseDTO.setId(saved.getId());
-           responseDTO.setTitle(saved.getTitle());
-           responseDTO.setAuthorId(saved.getAuthor().getId());
-           responseDTO.setAuthorName(saved.getAuthor().getName());
-           responseDTO.setCategoryId(saved.getCategory().getId());
-           responseDTO.setCategoryName(saved.getCategory().getName());
-           responseDTO.setImagePath(saved.getImagePath()); // short URL string
-           responseDTO.setImageType(saved.getImageType());
-           responseDTO.setPublishDate(saved.getPublishDate());
-           responseDTO.setCreateAt(saved.getCreate());
-           responseDTO.setUpdateAt(saved.getUpdate());
+           BookResponseDTO responseDTO = bookMapper.entityToDto(saved);
            return ResponseEntity.ok(new APIRespone<>(
                    true,
                    "update this book success",

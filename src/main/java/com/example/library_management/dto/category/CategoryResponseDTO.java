@@ -14,6 +14,12 @@ import lombok.Setter;
 public class CategoryResponseDTO {
 
     //todo : respone category name to admin
+
+    private Integer id;
     private String cateName;
+
+    public CategoryResponseDTO(int id){
+        this.id = id;
+    }
 
 }

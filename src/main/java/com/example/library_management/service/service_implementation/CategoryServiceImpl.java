@@ -6,6 +6,8 @@ import com.example.library_management.entity.CategoryEntity;
 import com.example.library_management.exception.DuplicateDataException;
 import com.example.library_management.exception.GenericException;
 import com.example.library_management.exception.ResourceNotFoundException;
+import com.example.library_management.mapper.CategoryMapper;
+import com.example.library_management.mapper.mapper_impl.CategoryMapperImpl;
 import com.example.library_management.repository.CategoryRepository;
 import com.example.library_management.service.CategoryService;
 import com.example.library_management.utils.APIRespone;
@@ -24,7 +26,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    //inject from ResponseDTO
+    //inject from CategoryMapperImpl
+    @Autowired
+    private CategoryMapperImpl categoryMapper;
+
     @Override
     public @NonNull ResponseEntity<APIRespone<CategoryResponseDTO>> addCategory(CategoryRequestDTO category) {
         try{
@@ -35,15 +40,13 @@ public class CategoryServiceImpl implements CategoryService {
             }
 
             //map data from requestDTO to Entity
-            CategoryEntity catEntity = new CategoryEntity();
-            catEntity.setName(category.getCategoryName());
+            CategoryEntity catEntity = categoryMapper.dtoToEntity(category);
 
             //save to repository
             CategoryEntity saved = categoryRepository.save(catEntity);
 
             //map data from Entity to responeDTO
-            CategoryResponseDTO responseDTO = new CategoryResponseDTO();
-            responseDTO.setCateName(saved.getName());
+            CategoryResponseDTO responseDTO = categoryMapper.entityToDto(saved);
             return ResponseEntity.ok(new APIRespone<>(
                     true,
                     "category saved success",
@@ -67,9 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
             //sent all data from entity to category responseDTO
             List<CategoryResponseDTO> dtoList = new ArrayList<>();
             for(CategoryEntity entity : allCategory){
-                CategoryResponseDTO responseDTO = new CategoryResponseDTO();
-                responseDTO.setCateName(entity.getName());
-
+                CategoryResponseDTO responseDTO = categoryMapper.entityToDto(entity);
                 //add to dtoList
                 dtoList.add(responseDTO);
             }
@@ -98,8 +99,7 @@ public class CategoryServiceImpl implements CategoryService {
             CategoryEntity entity = getEntity.get();
 
             //map data from entity to ---> response DTO
-            CategoryResponseDTO responseDTO = new CategoryResponseDTO();
-            responseDTO.setCateName(entity.getName());
+            CategoryResponseDTO responseDTO = categoryMapper.entityToDto(entity);
             return ResponseEntity.ok(new APIRespone<>(
                     true,
                     "get data success",
@@ -127,8 +127,7 @@ public class CategoryServiceImpl implements CategoryService {
                 CategoryEntity saved = categoryRepository.save(update);
 
                 //map data from entity to responseDTO
-                CategoryResponseDTO responseDTO = new CategoryResponseDTO();
-                responseDTO.setCateName(saved.getName());
+                CategoryResponseDTO responseDTO = categoryMapper.entityToDto(saved);
                 return ResponseEntity.ok(new APIRespone<>(
                         true,
                         "update data success!",

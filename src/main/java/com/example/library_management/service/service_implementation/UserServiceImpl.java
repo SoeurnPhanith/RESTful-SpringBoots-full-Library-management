@@ -6,6 +6,7 @@ import com.example.library_management.entity.UsersEntity;
 import com.example.library_management.exception.DuplicateDataException;
 import com.example.library_management.exception.GenericException;
 import com.example.library_management.exception.ResourceNotFoundException;
+import com.example.library_management.mapper.mapper_impl.UserMapperImpl;
 import com.example.library_management.repository.UserRepository;
 import com.example.library_management.service.UserService;
 import com.example.library_management.utils.APIRespone;
@@ -27,6 +28,9 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     //inject data from UserResponseDTO
+    @Autowired
+    private UserMapperImpl userMapper;
+
     @Nonnull
     @Override
     public ResponseEntity<APIRespone<UserResponseDTO>> createUser(UserRequestDTO userRequestDTO) {
@@ -49,24 +53,22 @@ public class UserServiceImpl implements UserService {
             }
 
             //map from dto-->entity
-            UsersEntity entity = new UsersEntity();
-            entity.setName(userRequestDTO.getName());
-            entity.setEmail(userRequestDTO.getEmail());
-            entity.setPassword(userRequestDTO.getPassword());
+//            UsersEntity entity = new UsersEntity();
+//            entity.setName(userRequestDTO.getName());
+//            entity.setEmail(userRequestDTO.getEmail());
+//            entity.setPassword(userRequestDTO.getPassword());
+            UsersEntity entity = userMapper.dtoToEntity(userRequestDTO);
 
             //save to entity
             UsersEntity savedEntity = userRepository.save(entity);
 
             //map from entity -->> dto
-            UserResponseDTO userResponseDTO = new UserResponseDTO();
-            userResponseDTO.setId(savedEntity.getId());
-            userResponseDTO.setName(savedEntity.getName());
-            userResponseDTO.setEmail(savedEntity.getEmail());
+            UserResponseDTO responseDTO = userMapper.entityToDTO(savedEntity);
 
             return ResponseEntity.ok(new APIRespone<>(
                     true,
                     "add student success",
-                    userResponseDTO
+                    responseDTO
             ));
         }catch (Exception exception){
             throw new ResourceNotFoundException(exception.getMessage());
@@ -88,11 +90,7 @@ public class UserServiceImpl implements UserService {
             //get all data from userEntity --> userResponseDTO
             List<UserResponseDTO> dtoList = new ArrayList<>();
             for(UsersEntity users : usersEntity){
-                UserResponseDTO userResponseDTO = new UserResponseDTO();
-
-                userResponseDTO.setId(users.getId());
-                userResponseDTO.setName(users.getName());
-                userResponseDTO.setEmail(users.getEmail());
+                UserResponseDTO userResponseDTO = userMapper.entityToDTO(users);
 
                 //add to dtoList
                 dtoList.add(userResponseDTO);
@@ -124,10 +122,7 @@ public class UserServiceImpl implements UserService {
            //get data from entity --> userResponseDTO
            UsersEntity entity = users.get();
 
-           UserResponseDTO userResponseDTO = new UserResponseDTO();
-           userResponseDTO.setId(entity.getId());
-           userResponseDTO.setName(entity.getName());
-           userResponseDTO.setEmail(entity.getEmail());
+           UserResponseDTO userResponseDTO = userMapper.entityToDTO(entity);
            return ResponseEntity.ok(
                    new APIRespone<>(
                            true,
@@ -154,20 +149,14 @@ public class UserServiceImpl implements UserService {
 
             UsersEntity updateEntity = usersEntity.get(); //get
 
-            updateEntity.setName(userDTO.getName());
-            updateEntity.setEmail(userDTO.getEmail());
-            updateEntity.setPassword(userDTO.getPassword());
-            updateEntity.setUpdate(LocalDateTime.now());
+            //requestDTO -->>  Entity
+            UsersEntity entity = userMapper.updateDtoToEntity(userDTO);
 
             //save this entity
             UsersEntity savedUpdate = userRepository.save(updateEntity);
 
             //sent data from entity --> userResponseDTO
-            UserResponseDTO userResponseDTO = new UserResponseDTO();
-            userResponseDTO.setId(savedUpdate.getId());
-            userResponseDTO.setName(savedUpdate.getName());
-            userResponseDTO.setEmail(savedUpdate.getEmail());
-
+            UserResponseDTO userResponseDTO = userMapper.entityToDTO(savedUpdate);
             return ResponseEntity.ok(
                     new APIRespone<>(
                             true,

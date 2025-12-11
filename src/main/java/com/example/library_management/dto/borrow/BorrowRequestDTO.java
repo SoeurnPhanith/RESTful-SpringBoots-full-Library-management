@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BorrowRequestDTO {
 
+    private Integer id;
+
     @JsonProperty("userId")
     @NotNull(message = "User ID is required")
     @Positive(message = "User ID must be positive")
@@ -28,4 +30,8 @@ public class BorrowRequestDTO {
 
     @NotNull(message = "Due date is required")
     private LocalDateTime dueDate; //dak dai song
+
+    public BorrowRequestDTO(Integer id){
+        this.id = id;
+    }
 }

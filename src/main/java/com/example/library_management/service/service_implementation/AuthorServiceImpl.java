@@ -6,6 +6,7 @@ import com.example.library_management.entity.AuthorEntity;
 import com.example.library_management.exception.DuplicateDataException;
 import com.example.library_management.exception.GenericException;
 import com.example.library_management.exception.ResourceNotFoundException;
+import com.example.library_management.mapper.mapper_impl.AuthorMapperImpl;
 import com.example.library_management.repository.AuthorRepository;
 import com.example.library_management.service.AuthorService;
 import com.example.library_management.utils.APIRespone;
@@ -25,6 +26,10 @@ public class AuthorServiceImpl implements AuthorService {
     @Autowired
     private AuthorRepository authorRepository;
 
+    //inject data from AuthorMapperImpl
+    @Autowired
+    private AuthorMapperImpl authorMapper;
+
     @Override
     public @NonNull ResponseEntity<APIRespone<AuthorResponeDTO>> addAuthor(AuthorRequestDTO author) {
         try {
@@ -35,17 +40,13 @@ public class AuthorServiceImpl implements AuthorService {
             }
 
             //map data from requestDTO -->> Entity
-            AuthorEntity authorEntity = new AuthorEntity();
-            authorEntity.setName(author.getName());
-            authorEntity.setBio(author.getBio());
+            AuthorEntity authorEntity = authorMapper.dtoToEntity(author);
 
             //save to entity or repository
             AuthorEntity savedEntity = authorRepository.save(authorEntity);
 
             //map data from Entity --->> responseDTO
-            AuthorResponeDTO authorResponeDTO = new AuthorResponeDTO();
-            authorResponeDTO.setName(savedEntity.getName());
-            authorResponeDTO.setBio(savedEntity.getBio());
+            AuthorResponeDTO authorResponeDTO = authorMapper.entityToDto(savedEntity);
             return ResponseEntity.ok(
                     new APIRespone<>(
                             true,
@@ -67,9 +68,7 @@ public class AuthorServiceImpl implements AuthorService {
             //get all data from entity for sent all data to responseDTO
             List<AuthorResponeDTO> DTOList = new ArrayList<>();
             for(AuthorEntity authorEntity : author){
-                AuthorResponeDTO responseDTO = new AuthorResponeDTO();
-                responseDTO.setName(authorEntity.getName());
-                responseDTO.setBio(authorEntity.getBio());
+                AuthorResponeDTO responseDTO = authorMapper.entityToDto(authorEntity);
 
                 //save into DTOList
                 DTOList.add(responseDTO);
@@ -99,9 +98,7 @@ public class AuthorServiceImpl implements AuthorService {
             AuthorEntity getAuthor = isFound.get();
 
             //map entity -->> responseDTO
-            AuthorResponeDTO responseDTO = new AuthorResponeDTO();
-            responseDTO.setName(getAuthor.getName());
-            responseDTO.setBio(getAuthor.getBio());
+            AuthorResponeDTO responseDTO = authorMapper.entityToDto(getAuthor);
             return ResponseEntity.ok(
                     new APIRespone<>(
                             true,
@@ -132,9 +129,7 @@ public class AuthorServiceImpl implements AuthorService {
             AuthorEntity savedEntity = authorRepository.save(update);
 
             //map Entity -->> ResponseDTO for update
-            AuthorResponeDTO responseDTO = new AuthorResponeDTO();
-            responseDTO.setName(savedEntity.getName());
-            responseDTO.setBio(savedEntity.getBio());
+            AuthorResponeDTO responseDTO = authorMapper.entityToDto(savedEntity);
             return ResponseEntity.ok(new APIRespone<>(
                     true,
                     "update data on author id " + id + " success",
