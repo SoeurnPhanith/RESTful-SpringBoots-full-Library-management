@@ -4,6 +4,7 @@ import com.example.library_management.dto.book.BookRequestDTO;
 import com.example.library_management.dto.book.BookResponseDTO;
 import com.example.library_management.utils.APIRespone;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +18,7 @@ public interface BookService {
     ResponseEntity<APIRespone<BookResponseDTO>> addBook(BookRequestDTO book,  MultipartFile imageFile);
 
     @NonNull
-    ResponseEntity<APIRespone<List<BookResponseDTO>>> showAllBookInLibrary();
+    ResponseEntity<APIRespone<List<BookResponseDTO>>> showAllBookInLibrary(int page, int size, String sortBy, String sortDir);
 
     @NonNull
     ResponseEntity<APIRespone<BookResponseDTO>> showBookInLibraryById(Integer id);

@@ -7,6 +7,7 @@ import com.example.library_management.utils.APIRespone;
 import com.example.library_management.utils.UtilEndPoint;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,8 +33,13 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<APIRespone<List<BookResponseDTO>>> showAllBookInLibrary(){
-        return bookService.showAllBookInLibrary();
+    public ResponseEntity<APIRespone<List<BookResponseDTO>>> getBooks(
+            @RequestParam(defaultValue = "0") int page,          // page number (default 0)
+            @RequestParam(defaultValue = "10") int size,         // page size (default 10)
+            @RequestParam(defaultValue = "id") String sortBy,    // field to sort (default id)
+            @RequestParam(defaultValue = "asc") String sortDir   // sort direction (asc or desc)
+    ) {
+        return bookService.showAllBookInLibrary(page, size, sortBy, sortDir);
     }
 
     @GetMapping ("/{bookId}")

@@ -16,18 +16,15 @@ import com.example.library_management.service.BookService;
 import com.example.library_management.utils.APIRespone;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.swing.text.html.parser.Entity;
-import java.awt.print.Book;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,33 +103,38 @@ public class BookServiceImpl implements BookService {
     }
 
 
+    // Get all books with pagination & sorting
     @Override
-    public @NonNull ResponseEntity<APIRespone<List<BookResponseDTO>>> showAllBookInLibrary() {
-        try{
-            //get all data from database
-            List<BookEntity> allDataFromEntity = bookRepository.findAll();
+    public @NonNull ResponseEntity<APIRespone<List<BookResponseDTO>>> showAllBookInLibrary(
+            int page, int size,
+            String sortBy, String sortDir
+    ) {
+        //check sort with Sort object
+        Sort sort = sortDir.equalsIgnoreCase("asc") ?
+                Sort.by(sortBy).ascending() :
+                Sort.by(sortBy).descending();
 
-            //check having or not
-            if(allDataFromEntity.isEmpty()){
-                throw new ResourceNotFoundException("No book found!");
-            }
+        //Pageable or Pagination Object
+        Pageable pageable = PageRequest.of(page, size, sort);
+        //Pageable is parameter pass ទៅ repository ដើម្បី query database ជា page ទិន្នន័យ
 
-            //get all data from entity to ResponseDTO
-            List<BookResponseDTO> dtoList = new ArrayList<>();
-            for(BookEntity book : allDataFromEntity){
-                BookResponseDTO responseDTO = bookMapper.entityToDto(book);
-                //save to dtoList
-                dtoList.add(responseDTO);
-            }
-            return ResponseEntity.ok(new APIRespone<>(
-                true,
-                "Get data success",
-                dtoList
-            ));
-        }catch (Exception exception){
-            throw new GenericException(exception.getMessage());
+        //get all data query from Pageable
+        Page<BookEntity> bookPage = bookRepository.findAll(pageable);
+
+        // map entity -->> ResponseDTO
+        List<BookResponseDTO> dtoList = new ArrayList<>();
+        for (BookEntity book : bookPage.getContent()) {
+            BookResponseDTO responseDTO = bookMapper.entityToDto(book);
+            dtoList.add(responseDTO);
         }
+
+        return ResponseEntity.ok(new APIRespone<>(
+                true,
+                "List of books with pagination & sorting",
+                dtoList     // ✅ Return only list → clean JSON (no metadata)
+        ));
     }
+
 
     @Override
     public @NonNull ResponseEntity<APIRespone<BookResponseDTO>> showBookInLibraryById(Integer id) {

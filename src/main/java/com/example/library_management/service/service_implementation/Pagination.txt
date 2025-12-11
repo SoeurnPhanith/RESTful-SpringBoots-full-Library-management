@@ -1,0 +1,24 @@
+1.️Page object គឺអ្វី?
+    Page គឺជា interface នៅក្នុង Spring Data JPA ដែលប្រើសម្រាប់ pagination (បែងចែកទិន្នន័យជា pages)
+
+    មិនត្រឹមតែផ្ដល់ list of data ទេ ប៉ុន្តែផ្ដល់ metadata ដែលអាចជួយ frontend និង backend គណនា pagination និង display page UI បានងាយ
+
+    ប្រើសម្រាប់ query data ជា page តែម្ដង ដើម្បីកាត់បន្ថយ memory និង network usage
+
+
+2.Method use in Page object
+ getNumber() → page number បច្ចុប្បន្ន (ចាប់ពី 0)
+
+ getSize() → page size (items ក្នុងមួយ page)
+
+ getTotalElements() → ចំនួន total record ទាំងអស់ក្នុង database
+
+ getTotalPages() → total pages = ceil(totalElements / size)
+
+ hasNext() → មាន next page ទេ
+
+ hasPrevious() → មាន previous page ទេ
+
+ isFirst() → page បច្ចុប្បន្នជា first page ឬទេ
+
+ isLast() → page បច្ចុប្បន្នជា last page ឬទេ
