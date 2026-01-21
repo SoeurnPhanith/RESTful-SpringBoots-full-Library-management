@@ -31,8 +31,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapperImpl userMapper;
 
-    @Nonnull
-    @Override
     public ResponseEntity<APIRespone<UserResponseDTO>> createUser(UserRequestDTO userRequestDTO) {
         try{
             //check exist user
@@ -150,7 +148,8 @@ public class UserServiceImpl implements UserService {
             UsersEntity updateEntity = usersEntity.get(); //get
 
             //requestDTO -->>  Entity
-            UsersEntity entity = userMapper.updateDtoToEntity(userDTO);
+            updateEntity = userMapper.updateDtoToEntity(userDTO);
+            updateEntity.setId(usersEntity.get().getId());
 
             //save this entity
             UsersEntity savedUpdate = userRepository.save(updateEntity);

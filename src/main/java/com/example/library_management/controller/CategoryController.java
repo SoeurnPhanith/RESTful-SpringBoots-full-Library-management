@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping (UtilEndPoint.Route + "/category")
+@RequestMapping (UtilEndPoint.Route + "/auth/adm$n/category")
 public class CategoryController {
 
     //inject data from ServiceImpl
@@ -25,8 +25,13 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<APIRespone<List<CategoryResponseDTO>>> getAllCategory(){
-        return categoryService.showAllCategory();
+    public ResponseEntity<APIRespone<List<CategoryResponseDTO>>> getAllCategory(
+            @RequestParam(defaultValue = "0") int page ,
+            @RequestParam(defaultValue = "3") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+    ){
+        return categoryService.showAllCategory(page, size, sortBy, sortDir);
     }
 
     @GetMapping (path = "/{categoryId}")

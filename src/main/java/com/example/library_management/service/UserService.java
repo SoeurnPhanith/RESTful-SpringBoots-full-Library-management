@@ -13,9 +13,6 @@ import java.util.List;
 public interface UserService {
 
     @Nonnull
-    ResponseEntity<APIRespone<UserResponseDTO>> createUser(UserRequestDTO userRequestDTO);
-
-    @Nonnull
     ResponseEntity<APIRespone<List<UserResponseDTO>>> getAllUser();
 
     @Nonnull

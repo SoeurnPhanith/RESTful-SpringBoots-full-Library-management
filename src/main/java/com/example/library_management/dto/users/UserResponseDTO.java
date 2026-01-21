@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL) //This annotation not showing null data into api
 public class UserResponseDTO {
 
     private Integer id;

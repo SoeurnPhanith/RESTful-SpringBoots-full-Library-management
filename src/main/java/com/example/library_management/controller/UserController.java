@@ -13,19 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping (UtilEndPoint.Route + "/user")
+@RequestMapping (UtilEndPoint.Route + "/auth/adm$n/user")
 public class UserController {
 
     //inject data from userService impl
     @Autowired(required = true)
     private UserServiceImpl userService;
-
-    @PostMapping
-    public ResponseEntity<APIRespone<UserResponseDTO>> createUser(
-            @Valid @RequestBody UserRequestDTO users
-    ){
-        return userService.createUser(users);
-    }
 
     @GetMapping
     public ResponseEntity<APIRespone<List<UserResponseDTO>>> getAllUser(){

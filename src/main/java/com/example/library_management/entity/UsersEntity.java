@@ -35,6 +35,9 @@ public class UsersEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "roles")
+    private String role;
+
     @CreationTimestamp
     @Column (name = "create_at")
     private LocalDateTime created;

@@ -13,8 +13,14 @@ import com.example.library_management.service.CategoryService;
 import com.example.library_management.utils.APIRespone;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,16 +64,28 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public @NonNull ResponseEntity<APIRespone<List<CategoryResponseDTO>>> showAllCategory() {
+    public @NonNull ResponseEntity<APIRespone<List<CategoryResponseDTO>>> showAllCategory(
+            int page, int size,
+            String sortBy, String sortDir
+    ) {
         try{
-            //get all data from database(Entity)
-            List<CategoryEntity> allCategory = categoryRepository.findAll();
+            //Sort data with sort object
+            Sort sort = sortDir.equalsIgnoreCase("asc") ?
+                        Sort.by(sortBy).ascending():
+                        Sort.by(sortBy).descending();
+
+            //create object from Pageable to pagination
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            //get all data from database(Entity) who we was pageable
+            Page<CategoryEntity> allCategory = categoryRepository.findAll(pageable);
 
             //check empty or not
             if(allCategory.isEmpty()){
                 throw new ResourceNotFoundException("No data record");
             }
-            //sent all data from entity to category responseDTO
+
+            //map all data from entity to category responseDTO
             List<CategoryResponseDTO> dtoList = new ArrayList<>();
             for(CategoryEntity entity : allCategory){
                 CategoryResponseDTO responseDTO = categoryMapper.entityToDto(entity);
@@ -85,6 +103,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class) // ✅ correct
     public @NonNull ResponseEntity<APIRespone<CategoryResponseDTO>> showCategoryById(Integer id) {
         try{
             //get data from database by id
@@ -111,6 +130,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public @NonNull ResponseEntity<APIRespone<CategoryResponseDTO>> updateCategory(Integer id, CategoryRequestDTO category) {
          try{
                 //get data from database entity

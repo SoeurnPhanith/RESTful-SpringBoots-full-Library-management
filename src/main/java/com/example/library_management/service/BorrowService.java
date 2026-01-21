@@ -15,7 +15,10 @@ public interface BorrowService {
     @NonNull
     ResponseEntity<APIRespone<BorrowResponseDTO>> borrow(BorrowRequestDTO borrow);
 
-    ResponseEntity<APIRespone<List<BorrowResponseDTO>>> checkAllHistoryOfBorrowed();
+    ResponseEntity<APIRespone<List<BorrowResponseDTO>>> checkAllHistoryOfBorrowed(
+            int page, int size,
+            String sortBy, String sortDir
+    );
 
     @NonNull
     ResponseEntity<APIRespone<BorrowResponseDTO>> checkHistoryOfBorrowedById(Integer id);

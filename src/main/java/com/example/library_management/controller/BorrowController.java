@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(UtilEndPoint.Route + "/borrow")
+@RequestMapping(UtilEndPoint.Route + "/auth/adm$n/borrow")
 public class BorrowController {
 
     //inject data from BorrowServiceImpl
@@ -36,8 +36,13 @@ public class BorrowController {
     }
 
     @GetMapping
-    public ResponseEntity<APIRespone<List<BorrowResponseDTO>>> checkAllHistoryBookInLibrary(){
-        return borrowService.checkAllHistoryOfBorrowed();
+    public ResponseEntity<APIRespone<List<BorrowResponseDTO>>> checkAllHistoryBookInLibrary(
+            @RequestParam(defaultValue = "0") int page ,
+            @RequestParam(defaultValue = "3") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+    ){
+        return borrowService.checkAllHistoryOfBorrowed(page, size, sortBy, sortDir);
     }
 
     @GetMapping ("/{id}")

@@ -5,12 +5,18 @@ import com.example.library_management.dto.users.UserRequestDTO;
 import com.example.library_management.dto.users.UserResponseDTO;
 import com.example.library_management.entity.UsersEntity;
 import com.example.library_management.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
 public class UserMapperImpl implements UserMapper {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public UsersEntity dtoToEntity(UserRequestDTO dto) {
         //set dto to entity
@@ -18,7 +24,8 @@ public class UserMapperImpl implements UserMapper {
 
         entity.setName(dto.getName());
         entity.setEmail(dto.getEmail());
-        entity.setPassword(dto.getPassword());
+        entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        entity.setRole("ROLE_USER"); //default user
         return entity;
     }
 
@@ -38,7 +45,8 @@ public class UserMapperImpl implements UserMapper {
 
         entity.setName(dto.getName());
         entity.setEmail(dto.getEmail());
-        entity.setPassword(dto.getPassword());
+        entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        entity.setRole("ROLE_USER");
         entity.setUpdate(LocalDateTime.now());
         return entity;
     }

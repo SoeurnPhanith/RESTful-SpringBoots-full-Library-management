@@ -16,9 +16,15 @@ import com.example.library_management.service.BorrowService;
 import com.example.library_management.utils.APIRespone;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -129,14 +135,28 @@ public class BorrowServiceImpl implements BorrowService {
 
     }
 
+    //Check all book but with pagination
     @Override
-    public ResponseEntity<APIRespone<List<BorrowResponseDTO>>> checkAllHistoryOfBorrowed() {
+    public ResponseEntity<APIRespone<List<BorrowResponseDTO>>> checkAllHistoryOfBorrowed(
+            int page, int size,
+            String sortBy, String sortDir
+    ) {
         try {
-            List<BorrowEntity> borrowData = borrowRepository.findAll();
+            //Sort data with sort object
+            Sort sort = sortBy.equalsIgnoreCase("asc") ?
+                    Sort.by(sortBy).ascending() :
+                    Sort.by(sortBy).descending();
+
+            //Pageable object to pagination
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            //get all data who pagination on it
+            Page<BorrowEntity> borrowData = borrowRepository.findAll(pageable);
             if (borrowData.isEmpty()) {
                 throw new ResourceNotFoundException("No data record!");
             }
 
+            //map data from Entity -->> ResponseDTO
             List<BorrowResponseDTO> dtoList = new ArrayList<>();
             for (BorrowEntity data : borrowData) {
                 BorrowResponseDTO responseDTO  = borrowMapper.entityToDto(data);
@@ -144,8 +164,8 @@ public class BorrowServiceImpl implements BorrowService {
             }
             return ResponseEntity.ok(new APIRespone<>(
                     true,
-                    "check borrow book success",
-                     dtoList
+                    "List of books with pagination & sorting",
+                    dtoList
             ));
         }catch (Exception exception) {
             throw new GenericException(exception.getMessage());
@@ -153,6 +173,7 @@ public class BorrowServiceImpl implements BorrowService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public @NonNull ResponseEntity<APIRespone<BorrowResponseDTO>> checkHistoryOfBorrowedById(Integer id) {
         try{
             //find history off borrow book ById

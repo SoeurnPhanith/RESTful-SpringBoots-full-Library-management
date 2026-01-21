@@ -16,7 +16,10 @@ public interface CategoryService {
     ResponseEntity<APIRespone<CategoryResponseDTO>> addCategory(CategoryRequestDTO category);
 
     @NonNull
-    ResponseEntity<APIRespone<List<CategoryResponseDTO>>>  showAllCategory();
+    ResponseEntity<APIRespone<List<CategoryResponseDTO>>>  showAllCategory(
+            int page, int size,
+            String sortBy, String sortDir
+    );
 
     @NonNull
     ResponseEntity<APIRespone<CategoryResponseDTO>> showCategoryById(Integer id);
